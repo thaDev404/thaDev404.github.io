@@ -194,7 +194,6 @@ input[type=number] {
 }
 
 #download-preview{
-    
     max-width: 990px;
     max-height: 448px;
     visibility: hidden;
