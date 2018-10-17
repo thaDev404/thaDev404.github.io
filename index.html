@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Pixel Art Maker</title>
+        
+        <!--Favicon Icon-->
+        <link rel="shortcut icon" href="favicon-32x32.png" type="image/x-icon"  />
+        
+        <!--Calling External CSS Stylesheet files -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Monoton">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300">
+        <link rel="stylesheet" href="css/styles.css">
+
+        <!--Calling javascript libraries from external CDN-->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+
+        <!--Linking external html2canvas javascript file-->
+        <script "text/javascript" src="js/html2canvas.js"></script>    
+        <style>
+
+            /*  NOTE: The styles were added inline for the custom color picker,
+                because Prefixfree needs access to your styles and they must be inlined 
+            */
+        
+            .button {
+                /*left: 22.5px;*/
+                margin: auto;
+                width: 250px;
+                height: 250px;
+                border-radius: 3em;
+                position: relative;
+                background-image: linear-gradient(to bottom, #dddddd, #d5d5d5);
+                box-shadow: inset 0 3px 7px 0px #FFF, inset 0 -5px 5px 0px rgba(0, 0, 0, 0.2), 0 8px 30px 0 rgba(0, 0, 0, 0.6);
+            }
+
+            .button:before, 
+            .button:after {
+                box-sizing: border-box;
+                display: block;
+            }
+
+            .button:before {
+                content: "";
+                position: absolute;
+                border-radius: 50%;
+                left: calc(50% - 6.5em);
+                top: calc(50% - 6.5em);
+                width: 13em;
+                height: 13em;
+                background-image: linear-gradient(to bottom, #ffffff, #aaaaaa);
+                -webkit-filter: blur(4px);
+            }
+
+            .button:after {
+                content: "";
+                position: absolute;
+                border-radius: 50%;
+                left: calc(50% - 5.5em);
+                top: calc(50% - 5.5em);
+                width: 11em;
+                height: 11em;
+                background-image: linear-gradient(to bottom, #c5c5c5, #dddddd 80%);
+                box-shadow: 0 4px 28px -10px rgba(0, 0, 0, 0.2);
+            }
+
+            .wheel,
+            .colors,
+            .color {
+                content: "";
+                position: absolute;
+                border-radius: 50%;
+                left: calc(50% - 4.75em);
+                top: calc(50% - 4.75em);
+                width: 9.5em;
+                height: 9.5em;
+            }
+
+            .wheel {
+                display: block;
+                z-index: 1;
+                box-shadow: inset 0 16px 32px 14px rgba(0, 0, 0, 0.7);
+            }
+
+            .colors {
+                list-style: none;
+                background: #ddd;
+                position: relative;
+                -webkit-filter: blur(10px);
+                transform: rotate(170deg) scaleX(-1);
+            }
+
+            .color {
+                clip: rect(0px, 9.5em, 9.5em, 4.75em);
+            }
+
+            .color:after {
+                content: "";
+                position: absolute;
+                border-radius: 50%;
+                left: calc(50% - 4.75em);
+                top: calc(50% - 4.75em);
+                width: 9.5em;
+                height: 9.5em;
+                clip: rect(0px, 4.75em, 9.5em, 0px);
+            }
+
+            .color:nth-child(1):after {
+                background-color: #9ED110;
+                z-index: 12;
+                transform: rotate(30deg);
+            }
+
+            .color:nth-child(2):after {
+                background-color: #50B517;
+                z-index: 11;
+                transform: rotate(60deg);
+            }
+
+            .color:nth-child(3):after {
+                background-color: #179067;
+                z-index: 10;
+                transform: rotate(90deg);
+            }
+
+            .color:nth-child(4):after {
+                background-color: #476EAF;
+                z-index: 9;
+                transform: rotate(120deg);
+            }
+
+            .color:nth-child(5):after {
+                background-color: #9f49ac;
+                z-index: 8;
+                transform: rotate(150deg);
+            }
+
+            .color:nth-child(6):after {
+                background-color: #CC42A2;
+                z-index: 7;
+                transform: rotate(180deg);
+            }
+
+            .color:nth-child(7):after {
+                background-color: #FF3BA7;
+                z-index: 6;
+                transform: rotate(180deg);
+            }
+
+            .color:nth-child(8):after {
+                background-color: #fe0048;
+                z-index: 5;
+                transform: rotate(210deg);
+            }
+
+            .color:nth-child(9):after {
+                background-color: #fe3000;
+                z-index: 4;
+                transform: rotate(240deg);
+            }
+
+            .color:nth-child(10):after {
+                background-color: #fe6c00;
+                z-index: 3;
+                transform: rotate(270deg);
+            }
+
+            .color:nth-child(11):after {
+                background-color: #FFCC00;
+                z-index: 2;
+                transform: rotate(300deg);
+            }
+
+            .color:nth-child(12):after {
+                background-color: #EDE604;
+                z-index: 1;
+                transform: rotate(330deg);
+            }
+
+            .color:nth-child(n+7) {
+                transform: rotate(180deg);
+            }
+
+            .center {
+                content: "";
+                position: absolute;
+                border-radius: 50%;
+                left: calc(50% - 3.15em);
+                top: calc(50% - 3.15em);
+                width: 6.3em;
+                height: 6.3em;
+                z-index: 2;
+                background-image: linear-gradient(to bottom, #eeeeee, #cccccc);
+                box-shadow: inset 0 3px 7px 0px #FFF, 0 25px 30px -5px rgba(0, 0, 0, 0.5);
+            }
+
+            .center:before {
+                content: "";
+                position: absolute;
+                border-radius: 50%;
+                left: calc(50% - 2.1em);
+                top: calc(50% - 2.1em);
+                width: 4.2em;
+                height: 4.2em;
+                background-image: linear-gradient(to bottom, #ffffff 20%, #aaaaaa);
+                box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.5);
+            }
+
+            .center:after {
+                content: "";
+                position: absolute;
+                border-radius: 50%;
+                left: calc(50% - 1.5em);
+                top: calc(50% - 1.5em);
+                width: 3em;
+                height: 3em;
+                background-image: linear-gradient(to bottom, #aaaaaa, #f5f5f5 80%);
+                box-shadow: inset 0 -1px 4px 0px #FFF;
+            }
+
+            .wrapper__pin {
+                transform: rotate(0deg);
+                transform-origin: 50px 50px;
+                -ms-transform-origin: 50px 50px;
+                -webkit-transform-origin: 50px 50px;
+                /* Safari and Chrome */
+                z-index: -1;
+                position: absolute;
+                transition: all 1s ease;
+            }
+
+            .pin {
+                width: 2.1em;
+                height: 2.1em;
+                transform: rotate(50deg) skew(30deg, 20deg);
+                box-shadow: inset 0px 0px 4px 1px rgba(0, 0, 0, 0.1), 0 0 12px 3px rgba(0, 0, 0, 0.2);
+                background: #FFF;
+                position: absolute;
+                z-index: -1;
+                left: 32px;
+                top: 3px;
+            }
+
+        </style>    
+    </head>
+    <body>
+            <!--Website Header-->
+            <div id="box1" class="box">
+                <h1>Pixel Art Maker</h1>
+            </div>
+
+            <!--Design Canvas Selection Parameters-->
+            <div id="box2" class="box">
+                <h2>Choose Grid Dimensions</h2>
+
+                <!--Design Canvas Width and Height Input Form-->
+                <form id="size-picker">
+                    Height:
+                    <input type="number" id="input-height" name="height" min="1" max="25" value="1">
+                    Width:
+                    <input type="number" id="input-width" name="width" min="1" value="1">           
+                </form>            
+                <h2 id = "pick-color-header" class="p-color-heading">Pick A Color</h2>
+                <br>
+
+                <!--Custom Color Picker-->
+                <div class="button" title="Pick a Colour" id="button">
+                        <div class="center" id="color-wheel-center">
+                        <div class="wrapper__pin">
+                            <div class="pin"></div>
+                        </div>
+                        </div>
+                        <div class="wheel">
+                        <ul class="colors">
+                            <li class="color"></li>
+                            <li class="color"></li>
+                            <li class="color"></li>
+                            <li class="color"></li>
+                            <li class="color"></li>
+                            <li class="color"></li>
+                            <li class="color"></li>
+                            <li class="color"></li>
+                            <li class="color"></li>
+                            <li class="color"></li>
+                            <li class="color"></li>
+                            <li class="color"></li>
+                        </ul>
+                        </div>
+                </div>
+
+                <!--Selected Color's RGB Value Output-->
+                <div class="values">
+                <span>R: <span class="value--r"></span></span>
+                <span>G: <span class="value--g"></span></span>
+                <span>B: <span class="value--b"></span></span>
+                </div>
+                <br>
+
+                <!--Hidden div to store color chosen from my cutom color picker-->
+                <div id="col" style="display: none;"></div>
+
+                <!--Submit Button-->
+                <input id="create-table" type="submit" value="Create Design Canvas"> <br>
+
+                <!--Help Icon with Instructions Tooltip-->
+                <div class="tool-tips"> 
+                <img src="images/64x64-clean3d-blue-help.png"> <span class="tool-tip-text"><kbd>Ctrl</kbd> + Mouse Hover a Cell to Paint it.<br><br><kbd>Shift</kbd>  + Mouse Hover a Cell to Erase its Paint. <br><br>Click the Download Canvas Button to Download your Design Canvas as an Image.</span>
+                </div>
+            </div>
+
+            <!--Design Canvas-->
+            <div id="box3" class="box">
+                <h2 id="design-canvas-heading">Design Canvas</h2>
+                <table id="pixel-canvas"></table>  
+                <!--Design Canvas Reset Button-->  
+                <button id = "reset-canvas" class="canvas-control">Reset Canvas</button>      
+                <!--Design Canvas Download Preview Button-->
+                <button id = "preview-canvas" class="canvas-control">Preview Canvas</button>
+                <!--Design Canvas Download Button-->                              
+                <button id = "download-canvas" class="canvas-control">Download Canvas</button>
+                <!--Code Triggered Link for Design Canvas Download-->
+                <a id="start-download" download="Design Canvas.png"></a>        
+            </div>
+
+            <!--Design Canvas Download Preview in Modal Box-->
+            <div id="my-modal" class="modal">
+                <span id="close-modal" class="close">&times;</span>
+                <img class="modal-content" id="img01" alt="Design Canvas Download Preview">
+                <div id="caption"></div>
+            </div>
+            
+            <!--Footer-->
+            <div id="box4" ><br>
+                <p>
+                    Developed by <strong>Oluwatobiloba Olusoga</strong>  - Aspiring Front End Developer
+                </p>
+                <br>
+                
+                <!--Social Media Links-->
+                <a id="social-media-links" href="https://github.com/thaDev404/"><img src="images/Github.png"></a>
+                <a id="social-media-links" href="https://twitter.com/thaDev404"><img src="images/twitter.png"></a>
+                <a id="social-media-links" href="https://www.facebook.com/thadev404"><img src="images/facebook.png"></a>  
+                <br>
+                <small>
+                    Copyright © 2018 Oluwatobiloba Olusoga
+                </small>
+            </div>    
+        
+        <!--Calling External Javascript Files-->
+        <script src="js/main.js"></script>
+        <script src="js/customcolorpicker.js"></script>
+        
+    </body>
+</html>
